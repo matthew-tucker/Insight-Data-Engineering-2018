@@ -4,6 +4,8 @@ This program compares stock values predicted by a provided model to actual stock
 
 Given an input file with stock values for a time interval `(1, ..., n)` and a window size `x`, this program finds the average error for all the windows formed by sliding a window of size `x` from `1` to `n-x`, with all intervals inclusive (thus, `(1, 2, 3, 4)` with a window size of four includes both `1` and `4`.)
 
+The program does this, essentially, by constructing `DataFrame` objects from the [pandas](https://pandas.pydata.org/) package for both the actual and predicted value input files. These two frames are then subject a full outer join to pair predicted (time, stock) pairs with actual (time, stock) pairs. The individual colums are then subtracted an an average taken.
+
 # Usage
 
 For directory structures that match the Insight challenge prompt requirements, the program can be run by executing `run.sh` in the root directory. For non-trivial directory setups, `src/validation.py` can be called directly:
