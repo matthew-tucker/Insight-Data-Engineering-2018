@@ -3,7 +3,6 @@
 
 ## TODO: Unicode input?
 ## TODO: Graceful handling of read_table errors
-## TODO: Case-insensitive support?
 ## TODO: Command line options
 ## TODO: README
 ## TODO: Check File Structure
@@ -12,6 +11,7 @@
 ## TODO: Python style
 ## TODO: Better directory handling
 ## TODO: Bad datatypes in input
+## TODO: handle file i/o errors
 ## TODO: run.sh
 ## TODO: make sure times are ordered in the output file? (they may be already)
 ## TODO: Comment code
@@ -71,22 +71,30 @@ def avg_window(df_actual, df_predict, win):
 def format_result(win, error):
     tmp = [str(win[0]), str(win[len(win)-1]), error]
     return '|'.join(tmp)
-
-
 #### FUNCTION DEFINITIONS END ####
+
+#### COMMAND-LINE ARGUMENTS ####
+argparser = argparse.ArgumentParser(description='Validate predictions of a stock model.')
+argparser.add_argument('actuals_file', help='The actual values file.')
+argparser.add_argument('predicts_file', help='The predicted values file.')
+argparser.add_argument('window_file', help='The window size file.')
+argparser.add_argument('output_file', help='The name of the output file.')
+argparser.add_argument('--verbose', dest='verbose', action='store_const', const=True, default=False,
+                        help='Print verbose command line output (default: off).')
+
+args=argparser.parse_args()
+#### COMMAND-LINE ARGUMENTS END ####
 
 #### DIRECTORY SETUP & I/O ####
 
 # set up the directory structure
 root_dir = os.getcwd()
-data_dir = os.path.join(root_dir, 'input')
-out_dir = os.path.join(root_dir, 'output')
 
 # get file locations and load
-f_actual = os.path.join(data_dir, 'actual.txt')
-f_predicted = os.path.join(data_dir, 'predicted.txt')
-f_window = os.path.join(data_dir, 'window.txt')
-f_out = os.path.join(out_dir, 'comparison.txt')
+f_actual = os.path.join(root_dir, args.actuals_file)
+f_predicted = os.path.join(root_dir, args.predicts_file)
+f_window = os.path.join(root_dir, args.window_file)
+f_out = os.path.join(root_dir, args.output_file)
 
 actual = pd.read_table(f_actual, sep='|', header=None)
 predicted = pd.read_table(f_predicted, sep='|', header=None)
@@ -109,12 +117,17 @@ predicted['Stock'] = map(lambda x: x.upper(), predicted['Stock'])
 t_min, t_max = actual['Time'].min(), actual['Time'].max()
 t_wins = nwise(range(t_min, t_max+1), n=window)
 
+if args.verbose:
+    print "Starting to compute %s window averages from time %s to time %s." % (len(t_wins), t_min, t_max)
 #### TIME WINDOW SETUP END ####
 
 #### MAIN LOOP ####
 # calculate a grand average error for all windows and write to file
 with open(f_out, 'w') as out_f:
     for t_win in t_wins:
+        if args.verbose:
+            print "Averaging window %s..." % str(t_win)
+    
         avg_err = avg_window(actual, predicted, t_win)
         err_formatted = format_result(t_win, avg_err)
         out_f.write(err_formatted + '\n')
@@ -122,6 +135,7 @@ with open(f_out, 'w') as out_f:
 #### MAIN LOOP END ####
 
 #### PRINT RESULTS ####
-print "Finished computing %s window averages from time %s to time %s." % (len(t_wins), t_min, t_max)
-print "Total time elapsed: %s seconds." % (time.time() - start_time)
+if args.verbose:
+    print "Finished computing %s window averages from time %s to time %s." % (len(t_wins), t_min, t_max)
+    print "Total time elapsed: %s seconds." % (time.time() - start_time)
 #### PRINT RESULTS END ####

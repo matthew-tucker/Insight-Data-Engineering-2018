@@ -6,7 +6,26 @@ Given an input file with stock values for a time interval `(1, ..., n)` and a wi
 
 # Usage
 
-For directory structures that match the Insight challenge prompt requirements, the program can be run by executing `run.sh` in the root directory.
+For directory structures that match the Insight challenge prompt requirements, the program can be run by executing `run.sh` in the root directory. For non-trivial directory setups, `src/validation.py` can be called directly:
+
+```
+usage: validation.py [-h] [--verbose]
+                     actuals_file predicts_file window_file output_file
+
+Validate predictions of a stock model.
+
+positional arguments:
+  actuals_file   The actual values file.
+  predicts_file  The predicted values file.
+  window_file    The window size file.
+  output_file    The name of the output file.
+
+optional arguments:
+  -h, --help     show this help message and exit
+  --verbose      Print verbose command line output (default: off).
+```
+
+where `verbose` prints several landmark messages as well as the total running time of the script.
 
 ## Input
 
