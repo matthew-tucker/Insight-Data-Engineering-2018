@@ -2,13 +2,9 @@
 
 ## TODO: Unicode input?
 ## TODO: Graceful handling of read_table errors
-## TODO: README
 ## TODO: Code headers
-## TODO: Unit Tests
 ## TODO: Python style
 ## TODO: Bad datatypes in input
-## TODO: run.sh
-## TODO: Comment code
 ## TODO: window.txt doesn't contain an integer
 
 import time
@@ -78,16 +74,14 @@ args=argparser.parse_args()
 #### COMMAND-LINE ARGUMENTS END ####
 
 #### DIRECTORY SETUP & I/O ####
-
 # set up the directory structure
 root_dir = os.getcwd()
-
-# get file locations and load
 f_actual = os.path.join(root_dir, args.actuals_file)
 f_predicted = os.path.join(root_dir, args.predicts_file)
 f_window = os.path.join(root_dir, args.window_file)
 f_out = os.path.join(root_dir, args.output_file)
 
+# actually conduct the i/o
 try:
     actual = pd.read_table(f_actual, sep='|', header=None)
 except IOError as e:
@@ -128,7 +122,6 @@ predicted['Stock'] = map(lambda x: x.upper(), predicted['Stock'])
 
 #### TIME WINDOW SETUP ####
 # calculate the times intervals needed to roll averages
-# TODO: What if the time intervals aren't the same in both files?
 t_min, t_max = actual['Time'].min(), actual['Time'].max()
 t_wins = nwise(range(t_min, t_max+1), n=window)
 

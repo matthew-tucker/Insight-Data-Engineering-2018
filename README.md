@@ -50,6 +50,7 @@ time|stock_name|stock_value
 This program makes some choices about how to handle nonstandard input data. Specifically:
 
 * Missing values for the time, stock id, or value in either `actual.txt` or `predicted.txt` will result that observation being discarded prior to averaging.
+* The time window over which the rolling average is constructed is defined by the range of times seen in `actual.txt`. Since this is a model validation tool, we do not consider cases where predictions have been made for times at which we do not have actual data to validate against. Thus, times at the edges of time ranges in `predicted.txt` will not appear in the result file if they are not in the range constructed using `actual.txt`.
 
 ## Output
 
