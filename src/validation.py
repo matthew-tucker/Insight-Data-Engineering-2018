@@ -4,7 +4,6 @@
 ## TODO: Code headers
 ## TODO: Python style
 ## TODO: Bad datatypes in input
-## TODO: window.txt doesn't contain an integer
 
 import time
 start_time = time.time()
@@ -86,7 +85,6 @@ try:
 except IOError as e:
     print 'Could not read file %s.\nPlease ensure it exists and can be read.' % f_actual
     sys.exit(1)
-    
     
 try:
     predicted = pd.read_table(f_predicted, sep='|', header=None)
