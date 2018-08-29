@@ -79,6 +79,7 @@ This repository also includes all the unit tests used to prepare this submission
 * `test_4`: A test of a window size of `1`
 * `test_5`: A test of a window size which covers the entire interval in actual.txt.
 * `test_6`: A test of stock ids that do not match in case.
+* `test_7`: A test of null/missing values in the input files.
 
 
 # Miscellaneous Notes

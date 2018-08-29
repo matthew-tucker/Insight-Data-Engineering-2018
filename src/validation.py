@@ -100,11 +100,13 @@ window = int(open(f_window).readline())
 actual = actual.dropna()
 predicted = predicted.dropna()
 
-
-
 # relabel column headers for convenience
 actual.columns = ['Time', 'Stock', 'Value']
 predicted.columns = ['Time', 'Stock', 'Value']
+
+# because numpy/pandas are bad with null integers, cast back
+actual['Time'] = actual['Time'].astype(np.dtype('int32'))
+predicted['Time'] = predicted['Time'].astype(np.dtype('int32'))
 
 # we assume stock ids are case-insensitive
 actual['Stock'] = map(lambda x: x.upper(), actual['Stock'])
@@ -114,7 +116,7 @@ predicted['Stock'] = map(lambda x: x.upper(), predicted['Stock'])
 #### TIME WINDOW SETUP ####
 # calculate the times intervals needed to roll averages
 # TODO: What if the time intervals aren't the same in both files?
-t_min, t_max = int(actual['Time'].min()), int(actual['Time'].max())
+t_min, t_max = actual['Time'].min(), actual['Time'].max()
 t_wins = nwise(range(t_min, t_max+1), n=window)
 
 if args.verbose:
