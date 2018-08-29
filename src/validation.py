@@ -1,6 +1,5 @@
 # coding: utf-8
 
-## TODO: Unicode input?
 ## TODO: Graceful handling of read_table errors
 ## TODO: Code headers
 ## TODO: Python style
@@ -50,12 +49,12 @@ def avg_window(df_actual, df_predict, win):
     if np.isnan(err_mean):
         return 'NA'
     else:
-        return "%.2f" % err_mean # two significant digits
+        return '%.2f' % err_mean # two significant digits
 
 
 ## utility function for formatting output with pipe delimiters
 ## INPUT: a window tuple win and an error value error
-## RETURNS: A string of format "window_start|window_end|error"
+## RETURNS: A string of format 'window_start|window_end|error'
 def format_result(win, error):
     tmp = [str(win[0]), str(win[len(win)-1]), error]
     return '|'.join(tmp)
@@ -85,20 +84,24 @@ f_out = os.path.join(root_dir, args.output_file)
 try:
     actual = pd.read_table(f_actual, sep='|', header=None)
 except IOError as e:
-    print "Could not read file %s.\nPlease ensure it exists and can be read." % f_actual
+    print 'Could not read file %s.\nPlease ensure it exists and can be read.' % f_actual
     sys.exit(1)
     
     
 try:
     predicted = pd.read_table(f_predicted, sep='|', header=None)
 except IOError as e:
-    print "Could not read file %s.\nPlease ensure it exists and can be read." % f_predicted
+    print 'Could not read file %s.\nPlease ensure it exists and can be read.' % f_predicted
     sys.exit(1)
 
 try:
-    window = int(open(f_window).readline())
+    window = open(f_window).readline()
+    window = int(window)
 except IOError as e:
-    print "Could not read file %s.\nPlease ensure it exists and can be read." % f_window
+    print 'Could not read file %s.\nPlease ensure it exists and can be read.' % f_window
+    sys.exit(1)
+except ValueError as e:
+    print 'Window.txt must contain a single integer on line one.\nCannot parse value %s.' % window
     sys.exit(1)
 #### DIRECTORY SETUP & I/O END ####
 
@@ -126,7 +129,7 @@ t_min, t_max = actual['Time'].min(), actual['Time'].max()
 t_wins = nwise(range(t_min, t_max+1), n=window)
 
 if args.verbose:
-    print "Starting to compute %s window averages from time %s to time %s." % (len(t_wins), t_min, t_max)
+    print 'Starting to compute %s window averages from time %s to time %s.' % (len(t_wins), t_min, t_max)
 #### TIME WINDOW SETUP END ####
 
 #### MAIN LOOP ####
@@ -135,19 +138,19 @@ try:
     with open(f_out, 'w') as out_f:
         for t_win in t_wins:
             if args.verbose:
-                print "Averaging window %s..." % str(t_win)
+                print 'Averaging window %s...' % str(t_win)
     
             avg_err = avg_window(actual, predicted, t_win)
             err_formatted = format_result(t_win, avg_err)
             out_f.write(err_formatted + '\n')
 except IOError as e:
-    print "Could not write results to file %s.\nPlease make sure this diectory exists and can be written to." % f_out
+    print 'Could not write results to file %s.\nPlease make sure this diectory exists and can be written to.' % f_out
     sys.exit(1)
         
 #### MAIN LOOP END ####
 
 #### PRINT RESULTS ####
 if args.verbose:
-    print "Finished computing %s window averages from time %s to time %s." % (len(t_wins), t_min, t_max)
-    print "Total time elapsed: %s seconds." % (time.time() - start_time)
+    print 'Finished computing %s window averages from time %s to time %s.' % (len(t_wins), t_min, t_max)
+    print 'Total time elapsed: %s seconds.' % (time.time() - start_time)
 #### PRINT RESULTS END ####
