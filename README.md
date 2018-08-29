@@ -54,6 +54,7 @@ This program makes some choices about how to handle nonstandard input data. Spec
 * The program only looks at the first line of `window.txt`, so all subsequent lines are ignored and the window size on the first line is used.
 * The program exits if the first line of `window.txt` does not contain something which can be parsed as an integer.
 * Entries for the time and value fields are discarded if they are not integers or floats, respectively. Numeric values are explictly cast.
+* If the window size is larger than the entire observation period, a single average error is computed for the entire observation period.
 
 ## Output
 
@@ -89,6 +90,7 @@ This repository also includes all the unit tests used to prepare this submission
 * `test_9`: A test where `predicted.txt` has fewer times than `actual.txt`. 
 * `test_10`: A test of stock names with unicode characters.
 * `test_11`: A test of non-numeric stock values and times.
+* `test_12`: A test of window sizes larger than the observation period.
 
 
 # Miscellaneous Notes

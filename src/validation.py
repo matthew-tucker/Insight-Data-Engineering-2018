@@ -3,7 +3,7 @@
 ## TODO: Graceful handling of read_table errors
 ## TODO: Code headers
 ## TODO: Python style
-## TODO: Window larger than range
+## TODO: clean up README
 
 import time
 start_time = time.time()
@@ -131,7 +131,17 @@ predicted['Stock'] = map(lambda x: x.upper(), predicted['Stock'])
 #### TIME WINDOW SETUP ####
 # calculate the times intervals needed to roll averages
 t_min, t_max = actual['Time'].min(), actual['Time'].max()
-t_wins = nwise(range(t_min, t_max+1), n=window)
+t_range = range(t_min, t_max+1)
+
+# it's not sensible to have a window larger than our entire
+# observation period. In this case, we just average
+# the whole data set but warn the user.
+if window > len(t_range):
+    print 'WARNING: Window size is bigger than observation period. \
+Using window size of %s instead.' % len(t_range)
+    window = len(t_range)
+
+t_wins = nwise(t_range, n=window)
 
 if args.verbose:
     print 'Starting to compute %s window averages from time %s to time %s.' % (len(t_wins), t_min, t_max)
