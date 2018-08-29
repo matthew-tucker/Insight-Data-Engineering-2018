@@ -83,6 +83,8 @@ This repository also includes all the unit tests used to prepare this submission
 * `test_5`: A test of a window size which covers the entire interval in actual.txt.
 * `test_6`: A test of stock ids that do not match in case.
 * `test_7`: A test of null/missing values in the input files.
+* `test_8`: A test where `actual.txt` has fewer times than `predicted.txt`. Additional times in `predicted.txt` are ignored.
+* `test_9`: A test where `predicted.txt` has fewer times than `actual.txt`. Additional entries in `predicted.txt` are ignored.
 
 
 # Miscellaneous Notes
