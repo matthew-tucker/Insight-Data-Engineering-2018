@@ -43,7 +43,11 @@ time|stock_name|stock_value
 
 `window.txt` is assumed to be a single integer on the first line of the file.
 
-**Note:** The program assumes that stock ids are case-insensitive and it will therefore treat ids such as `AAPL` and `aapl` as identical.
+### Notes on Input Data
+
+This program makes some choices about how to handle nonstandard input data. Specifically:
+
+* Missing values for the time, stock id, or value in either `actual.txt` or `predicted.txt` will result that observation being discarded prior to averaging.
 
 ## Output
 

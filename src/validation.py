@@ -1,22 +1,16 @@
-
 # coding: utf-8
 
 ## TODO: Unicode input?
 ## TODO: Graceful handling of read_table errors
-## TODO: Command line options
 ## TODO: README
-## TODO: Check File Structure
 ## TODO: Code headers
 ## TODO: Unit Tests
 ## TODO: Python style
-## TODO: Better directory handling
 ## TODO: Bad datatypes in input
 ## TODO: handle file i/o errors
 ## TODO: run.sh
-## TODO: make sure times are ordered in the output file? (they may be already)
 ## TODO: Comment code
 ## TODO: window.txt doesn't contain an integer
-## TODO: timing/general output -- take it out?
 
 import time
 start_time = time.time()
@@ -102,6 +96,12 @@ window = int(open(f_window).readline())
 #### DIRECTORY SETUP & I/O END ####
 
 #### DATA CLEANING & VALIDATION ####
+# drop rows with null values
+actual = actual.dropna()
+predicted = predicted.dropna()
+
+
+
 # relabel column headers for convenience
 actual.columns = ['Time', 'Stock', 'Value']
 predicted.columns = ['Time', 'Stock', 'Value']
@@ -114,7 +114,7 @@ predicted['Stock'] = map(lambda x: x.upper(), predicted['Stock'])
 #### TIME WINDOW SETUP ####
 # calculate the times intervals needed to roll averages
 # TODO: What if the time intervals aren't the same in both files?
-t_min, t_max = actual['Time'].min(), actual['Time'].max()
+t_min, t_max = int(actual['Time'].min()), int(actual['Time'].max())
 t_wins = nwise(range(t_min, t_max+1), n=window)
 
 if args.verbose:
