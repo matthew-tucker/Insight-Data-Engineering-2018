@@ -24,6 +24,8 @@ time|stock_name|stock_value
 
 `window.txt` is assumed to be a single integer on the first line of the file.
 
+**Note:** The program assumes that stock ids are case-insensitive and it will therefore treat ids such as `AAPL` and `aapl` as identical.
+
 ## Output
 
 The output is a file, `output/comparison.txt` which contains one line for each sliding time window, all of the form:
@@ -49,9 +51,11 @@ This repository also includes all the unit tests used to prepare this submission
 * `test_1`: Insight's included test of a larger sample size.
     * The system used to test this code produced the rounding discrepencies addressed by email. `comparison.txt` was edited in this test to reflect the rounding values obtained on that system.
 * `test_2`: A test of proper handling of windows with no matching stock (output should be `NA`).
-* `test_3`: A test of missing values in `actual.txt` -- it's not clear what the use-case is here, but it's a possible corner case so I cover it.
+* `test_3`: A test of missing values in `actual.txt`
+    * It's not clear what the use-case is here, but it's a possible corner case so I cover it.
 * `test_4`: A test of a window size of `1`
 * `test_5`: A test of a window size which covers the entire interval in actual.txt.
+* `test_6`: A test of stock ids that do not match in case.
 
 
 # Miscellaneous Notes
