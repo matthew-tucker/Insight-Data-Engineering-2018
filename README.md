@@ -32,12 +32,14 @@ The output is a file, `output/comparison.txt` which contains one line for each s
 start_time|end_time|average_error
 ```
 
+If there are no matching stocks for an entire time window, `average_error` is reported as `NA`.
+
 # Dependencies
 
 This analysis tool has a handful of dependencies, all of which are standard packages for Python scientific computing. In each case, the version of the package present on the test system is noted in parentheses. This tool was developed in Python 2.7 in a vanilla Anaconda installation.
 
-* *NumPy* (`1.15.0`)
-* *Pandas* (`0.23.4`)
+* **NumPy** (`1.15.0`)
+* **Pandas** (`0.23.4`)
 
 # Unit Tests
 
@@ -46,6 +48,7 @@ This repository also includes all the unit tests used to prepare this submission
 * `test_0`: A test consisting of the example data from the Insight-provided README.
 * `test_1`: Insight's included test of a larger sample size.
     * The system used to test this code produced the rounding discrepencies addressed by email. `comparison.txt` was edited in this test to reflect the rounding values obtained on that system.
+* `test_2`: A test of proper handling of windows with no matching stock (output should be `NA`).
 
 
 # Miscellaneous Notes
