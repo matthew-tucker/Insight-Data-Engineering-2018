@@ -3,7 +3,7 @@
 ## TODO: Graceful handling of read_table errors
 ## TODO: Code headers
 ## TODO: Python style
-## TODO: Bad datatypes in input
+## TODO: Window larger than range
 
 import time
 start_time = time.time()
@@ -104,6 +104,13 @@ except ValueError as e:
 #### DIRECTORY SETUP & I/O END ####
 
 #### DATA CLEANING & VALIDATION ####
+# if there are non-numeric entries in columns 1,3
+# we force them to NaN to be dropped later
+actual[0] = pd.to_numeric(actual[0], errors='coerce')
+predicted[0] = pd.to_numeric(predicted[0], errors='coerce')
+actual[2] = pd.to_numeric(actual[2], errors='coerce')
+predicted[2] = pd.to_numeric(predicted[2], errors='coerce')
+
 # drop rows with null values
 actual = actual.dropna()
 predicted = predicted.dropna()

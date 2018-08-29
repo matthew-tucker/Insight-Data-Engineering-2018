@@ -53,6 +53,7 @@ This program makes some choices about how to handle nonstandard input data. Spec
 * The time window over which the rolling average is constructed is defined by the range of times seen in `actual.txt`. Since this is a model validation tool, we do not consider cases where predictions have been made for times at which we do not have actual data to validate against. Thus, times at the edges of time ranges in `predicted.txt` will not appear in the result file if they are not in the range constructed using `actual.txt`.
 * The program only looks at the first line of `window.txt`, so all subsequent lines are ignored and the window size on the first line is used.
 * The program exits if the first line of `window.txt` does not contain something which can be parsed as an integer.
+* Entries for the time and value fields are discarded if they are not integers or floats, respectively. Numeric values are explictly cast.
 
 ## Output
 
@@ -80,16 +81,14 @@ This repository also includes all the unit tests used to prepare this submission
     * The system used to test this code produced the rounding discrepencies addressed by email. `comparison.txt` was edited in this test to reflect the rounding values obtained on that system.
 * `test_2`: A test of proper handling of windows with no matching stock (output should be `NA`).
 * `test_3`: A test of missing values in `actual.txt`
-    * It's not clear what the use-case is here, but it's a possible corner case so I cover it.
 * `test_4`: A test of a window size of `1`
 * `test_5`: A test of a window size which covers the entire interval in actual.txt.
 * `test_6`: A test of stock ids that do not match in case.
 * `test_7`: A test of null/missing values in the input files.
 * `test_8`: A test where `actual.txt` has fewer times than `predicted.txt`.
-    * Additional times in `predicted.txt` are ignored.
 * `test_9`: A test where `predicted.txt` has fewer times than `actual.txt`. 
-    * Additional entries in `predicted.txt` are ignored.
 * `test_10`: A test of stock names with unicode characters.
+* `test_11`: A test of non-numeric stock values and times.
 
 
 # Miscellaneous Notes
