@@ -29,7 +29,7 @@ where `verbose` prints several landmark messages as well as the total running ti
 
 ## Input
 
-The input should contain three files, all stored in `input/`:
+The input must contain contain three files, all stored in `input/`. The program will exit with status 1 if none of the following files exist:
 
 * `actual.txt`: the actual observed stock values
 * `predicted.txt`: the model-predicted stock values
@@ -57,7 +57,7 @@ The output is a file, `output/comparison.txt` which contains one line for each s
 start_time|end_time|average_error
 ```
 
-If there are no matching stocks for an entire time window, `average_error` is reported as `NA`.
+If there are no matching stocks for an entire time window, `average_error` is reported as `NA`. If this file cannot be written to, the program will exit with status 1.
 
 # Dependencies
 

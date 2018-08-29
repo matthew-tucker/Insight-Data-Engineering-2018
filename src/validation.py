@@ -7,7 +7,6 @@
 ## TODO: Unit Tests
 ## TODO: Python style
 ## TODO: Bad datatypes in input
-## TODO: handle file i/o errors
 ## TODO: run.sh
 ## TODO: Comment code
 ## TODO: window.txt doesn't contain an integer
@@ -17,8 +16,7 @@ start_time = time.time()
 
 import numpy as np
 import pandas as pd
-import os
-import argparse
+import os, sys, argparse
 from itertools import tee, islice, izip
 
 #### FUNCTION DEFINITIONS ####
@@ -90,9 +88,24 @@ f_predicted = os.path.join(root_dir, args.predicts_file)
 f_window = os.path.join(root_dir, args.window_file)
 f_out = os.path.join(root_dir, args.output_file)
 
-actual = pd.read_table(f_actual, sep='|', header=None)
-predicted = pd.read_table(f_predicted, sep='|', header=None)
-window = int(open(f_window).readline())
+try:
+    actual = pd.read_table(f_actual, sep='|', header=None)
+except IOError as e:
+    print "Could not read file %s.\nPlease ensure it exists and can be read." % f_actual
+    sys.exit(1)
+    
+    
+try:
+    predicted = pd.read_table(f_predicted, sep='|', header=None)
+except IOError as e:
+    print "Could not read file %s.\nPlease ensure it exists and can be read." % f_predicted
+    sys.exit(1)
+
+try:
+    window = int(open(f_window).readline())
+except IOError as e:
+    print "Could not read file %s.\nPlease ensure it exists and can be read." % f_window
+    sys.exit(1)
 #### DIRECTORY SETUP & I/O END ####
 
 #### DATA CLEANING & VALIDATION ####
@@ -125,14 +138,18 @@ if args.verbose:
 
 #### MAIN LOOP ####
 # calculate a grand average error for all windows and write to file
-with open(f_out, 'w') as out_f:
-    for t_win in t_wins:
-        if args.verbose:
-            print "Averaging window %s..." % str(t_win)
+try:
+    with open(f_out, 'w') as out_f:
+        for t_win in t_wins:
+            if args.verbose:
+                print "Averaging window %s..." % str(t_win)
     
-        avg_err = avg_window(actual, predicted, t_win)
-        err_formatted = format_result(t_win, avg_err)
-        out_f.write(err_formatted + '\n')
+            avg_err = avg_window(actual, predicted, t_win)
+            err_formatted = format_result(t_win, avg_err)
+            out_f.write(err_formatted + '\n')
+except IOError as e:
+    print "Could not write results to file %s.\nPlease make sure this diectory exists and can be written to." % f_out
+    sys.exit(1)
         
 #### MAIN LOOP END ####
 
