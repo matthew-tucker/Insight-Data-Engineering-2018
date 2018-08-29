@@ -49,6 +49,7 @@ This repository also includes all the unit tests used to prepare this submission
 * `test_1`: Insight's included test of a larger sample size.
     * The system used to test this code produced the rounding discrepencies addressed by email. `comparison.txt` was edited in this test to reflect the rounding values obtained on that system.
 * `test_2`: A test of proper handling of windows with no matching stock (output should be `NA`).
+* `test_3`: A test of missing values in `actual.txt` -- it's not clear what the use-case is here, but it's a possible corner case so I cover it.
 
 
 # Miscellaneous Notes

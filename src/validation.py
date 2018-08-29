@@ -62,7 +62,7 @@ def avg_window(df_actual, df_predict, win):
     if np.isnan(err_mean):
         return 'NA'
     else:
-        return "%.2f" % err_mean
+        return "%.2f" % err_mean # two significant digits
 
 
 ## utility function for formatting output with pipe delimiters
