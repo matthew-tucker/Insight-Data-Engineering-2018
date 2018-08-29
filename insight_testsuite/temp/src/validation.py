@@ -13,7 +13,6 @@
 ## TODO: Better directory handling
 ## TODO: run.sh
 ## TODO: make sure times are ordered in the output file? (they may be already)
-## TODO: FAQ 1 -- no match in time window case
 ## TODO: Comment code
 ## TODO: window.txt doesn't contain an integer
 ## TODO: timing/general output -- take it out?
