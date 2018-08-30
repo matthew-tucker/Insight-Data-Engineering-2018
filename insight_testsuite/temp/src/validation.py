@@ -4,9 +4,7 @@
 ## TODO: Code headers
 ## TODO: Python style
 ## TODO: clean up README
-## TODO: completely missing inputs?
-## TODO: Duplicate entires in actual/predicted?
-## TODO: degenerate or overfull lines
+## TODO: Bad lines in input?
 
 import time
 start_time = time.time()
@@ -97,7 +95,7 @@ try:
 except IOError as e:
     print 'Could not read file %s.\nPlease ensure it exists and can be read.' % f_predicted
     sys.exit(1)
-except pandas.errors.EmptyDataError as e:
+except pd.errors.EmptyDataError as e:
     print 'Could not parse data from file %s.\nPlease ensure it follows the specification in the README.' % f_predicted
     sys.exit(1)
 
@@ -139,6 +137,10 @@ predicted['Time'] = predicted['Time'].astype(np.dtype('int32'))
 # we assume stock ids are case-insensitive
 actual['Stock'] = map(lambda x: x.upper(), actual['Stock'])
 predicted['Stock'] = map(lambda x: x.upper(), predicted['Stock'])
+
+# at this point we can drop duplicate rows
+actual = actual.drop_duplicates(subset=['Time', 'Stock'])
+predicted = predicted.drop_duplicates(subset=['Time', 'Stock'])
 #### DATA CLEANING & VALIDATION END ####
 
 #### TIME WINDOW SETUP ####
