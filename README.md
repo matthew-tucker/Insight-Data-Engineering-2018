@@ -1,10 +1,12 @@
 # Program Description
 
-This repository contains a solution to the [Fall 2018 Insight Data Engineering Coding Challenge](https://github.com/InsightDataScience/prediction-validation) written in python 2.7. The program compares stock values predicted by a provided model to actual stock values observed over the same time frame and calcuates the average error over a specified sliding time window. The error for a given stock's prediction is defined as: `error = | actual_value - predicted_value |` and the program finds the mean of the error for a given time window.
+This repository contains a solution to the [Fall 2018 Insight Data Engineering Coding Challenge](https://github.com/InsightDataScience/prediction-validation) written in python 2.7. The program compares stock values predicted by a provided model to actual stock values observed over the same time frame and calculates the average error over a specified sliding time window. The error for a given stock's prediction is defined as: `error = | actual_value - predicted_value |` and the program finds the mean of the error for a given time window.
 
 Given an input file with stock values for a time interval `(1, ..., t)` and a window size `x`, this program finds the average error for all the windows formed by sliding a window of size `x` starting from `1` to `t-x`, with all intervals inclusive (thus, `(1, 2, 3, 4)` with a window size of four includes both `1` and `4`.)
 
-The program does this, essentially, by constructing `DataFrame` objects from the [pandas](https://pandas.pydata.org/) package for both the actual and predicted value input files. These two frames are then subject a full outer join/merge to pair predicted (time, stock) pairs with actual (time, stock) pairs. The individual colums are then subtracted an an average taken. The program only assesses predictions for times at which there are actual values recorded; it does not validate predictions for times at which there are no actual recorded values to validate against.
+The program does this, essentially, by constructing `DataFrame` objects from the [pandas](https://pandas.pydata.org/) package for both the actual and predicted value input files. These two frames are then subject a full outer join/merge to pair predicted (time, stock) pairs with actual (time, stock) pairs. The individual columns are then subtracted an an average taken. The program only assesses predictions for times at which there are actual values recorded; it does not validate predictions for times at which there are no actual recorded values to validate against.
+
+As far as runtime is concerned, there is no formal analysis here, but the bottleneck would be the use of the `pandas.read_table()` and `pandas.DataFrame.merge()` methods. Each input file is only read once and the main program loop is linear in the number of time windows to be averaged. The program does hold the entirety of its input files in system memory, and so this should be taken into consideration when validating extreme large datasets without a distributed architecture.
 
 # Usage
 
@@ -45,7 +47,9 @@ The input must contain contain three files, all stored in `input/`. The program 
 time|stock_name|stock_value
 ```
 
-Where `time` is assumed to be an integer greater than 0. Per the directions, the script assumes these files are sorted by `time`, though nothing in the running of the script should require this to be the case. Missing values for the `time`, `stock_name` or `stock_value` in either `actual.txt` or `predicted.txt` will result that observation being discarded prior to averaging. Entries for the `time` and `stock_value` fields are treated as missing and discarded if they are not integers or floats, respectively. Numeric values are explictly cast. Whitespace on either side of a `stock_name` is discarded; whitespace internal to a `stock_name` will be treated as distinctive, and so `AAPL` and `AA PL` are distinct values for `stock_name`, but `AAPL` and ` AAPL ` are not. Duplicate rows (defined in terms of (time, stock_name) keys) are cleaned by keeping only the first row. 
+Where `time` is assumed to be an integer greater than 0. Per the directions, the script assumes these files are sorted by `time`, though nothing in the running of the script should require this to be the case. Missing values for the `time`, `stock_name` or `stock_value` in either `actual.txt` or `predicted.txt` will result that observation being discarded prior to averaging. Entries for the `time` and `stock_value` fields are treated as missing and discarded if they are not integers or floats, respectively. Numeric values are explicitly cast. 
+
+Whitespace on either side of a `stock_name` is discarded; whitespace internal to a `stock_name` will be treated as distinctive, and so `AAPL` and `AA PL` are distinct values for `stock_name`, but `AAPL` and ` AAPL ` are not. Duplicate rows (defined in terms of (time, stock_name) keys) are cleaned by keeping only the first row. 
 
 The program is designed to operate with `actual.txt` and `predicted.txt` files which have exactly two delimiters (`|`) on each line. Rows with <2 delimiters are dropped as missing data and lines with >3 delimiters are dropped by the `read_table()` method from pandas.
 
@@ -75,11 +79,11 @@ This analysis tool has two dependencies, both of which are standard packages for
 
 # Unit Tests
 
-This repository also includes all the unit tests used to prepare this submission. These tests are all contained in the `insight_testsuite/tests/` directory. This section describes each test's purpose as well as any commentary on the script's performance on the test.
+This repository also includes all the unit tests used to prepare this submission. These tests are all contained in the `insight_testsuite/tests/` directory. This section describes each test's purpose as well as any required commentary.
 
 * `test_0`: A test consisting of the example data from the Insight-provided README.
 * `test_1`: Insight's included test of a larger sample size.
-    * The system used to test this code produced the rounding discrepencies addressed by email. `comparison.txt` was edited in this test to reflect the rounding values obtained on that system.
+    * The system used to test this code produced the rounding discrepancies addressed by email. `comparison.txt` was edited in this test to reflect the rounding values obtained on that system.
 * `test_2`: A test of proper handling of windows with no matching stock (output should be `NA`).
 * `test_3`: A test of missing values in `actual.txt`
 * `test_4`: A test of a window size of `1`

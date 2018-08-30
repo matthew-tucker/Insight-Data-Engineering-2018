@@ -1,6 +1,5 @@
 # coding: utf-8
 
-## TODO: Graceful handling of read_table errors
 ## TODO: Code headers
 ## TODO: Python style
 ## TODO: clean up README
