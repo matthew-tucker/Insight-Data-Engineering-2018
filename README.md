@@ -1,14 +1,14 @@
 # Program Description
 
-This program compares stock values predicted by a provided model to actual stock values observed over the same time frame and calcuates the average error over a specified sliding time window. The error for a given stock's prediction is defined as: `error = | actual_value - predicted_value|` and the program finds the mean of the error for a given time window.
+This repository contains a solution to the [Fall 2018 Insight Data Engineering Coding Challenge](https://github.com/InsightDataScience/prediction-validation) written in python 2.7. The program compares stock values predicted by a provided model to actual stock values observed over the same time frame and calcuates the average error over a specified sliding time window. The error for a given stock's prediction is defined as: `error = | actual_value - predicted_value |` and the program finds the mean of the error for a given time window.
 
-Given an input file with stock values for a time interval `(1, ..., n)` and a window size `x`, this program finds the average error for all the windows formed by sliding a window of size `x` from `1` to `n-x`, with all intervals inclusive (thus, `(1, 2, 3, 4)` with a window size of four includes both `1` and `4`.)
+Given an input file with stock values for a time interval `(1, ..., t)` and a window size `x`, this program finds the average error for all the windows formed by sliding a window of size `x` starting from `1` to `t-x`, with all intervals inclusive (thus, `(1, 2, 3, 4)` with a window size of four includes both `1` and `4`.)
 
-The program does this, essentially, by constructing `DataFrame` objects from the [pandas](https://pandas.pydata.org/) package for both the actual and predicted value input files. These two frames are then subject a full outer join to pair predicted (time, stock) pairs with actual (time, stock) pairs. The individual colums are then subtracted an an average taken.
+The program does this, essentially, by constructing `DataFrame` objects from the [pandas](https://pandas.pydata.org/) package for both the actual and predicted value input files. These two frames are then subject a full outer join/merge to pair predicted (time, stock) pairs with actual (time, stock) pairs. The individual colums are then subtracted an an average taken. The program only assesses predictions for times at which there are actual values recorded; it does not validate predictions for times at which there are no actual recorded values to validate against.
 
 # Usage
 
-For directory structures that match the Insight challenge prompt requirements, the program can be run by executing `run.sh` in the root directory. For non-trivial directory setups, `src/validation.py` can be called directly:
+For directory structures that match the Insight challenge prompt requirements, the program can be run by executing `run.sh` in the root directory. For non-trivial directory setups, `src/validation.py` can be called directly with the following usage:
 
 ```
 usage: validation.py [-h] [--verbose]
@@ -27,7 +27,7 @@ optional arguments:
   --verbose      Print verbose command line output (default: off).
 ```
 
-where `verbose` prints several landmark messages as well as the total running time of the script.
+where `verbose` prints several landmark messages as well as the total running time of the script. `run.sh` does not ever set `--verbose`, as this flag is intended for debugging purposes only.
 
 ## Input
 
@@ -37,24 +37,21 @@ The input must contain contain three files, all stored in `input/`. The program 
 * `predicted.txt`: the model-predicted stock values
 * `window.txt`: the size of the sliding window
 
+### `actual.txt` & `predicted.txt`
+
 `actual.txt` and `predicted.txt` are, as per the instructions, assumed to be pipe-delimited text files where each line contains one stock value in the format:
 
 ```
 time|stock_name|stock_value
 ```
 
-`window.txt` is assumed to be a single integer on the first line of the file.
+Where `time` is assumed to be an integer greater than 0. Per the directions, the script assumes these files are sorted by `time`, though nothing in the running of the script should require this to be the case. Missing values for the `time`, `stock_name` or `stock_value` in either `actual.txt` or `predicted.txt` will result that observation being discarded prior to averaging. Entries for the `time` and `stock_value` fields are treated as missing and discarded if they are not integers or floats, respectively. Numeric values are explictly cast.
 
-### Notes on Input Data
+Additionally, a remark about the time domain of analysis is in order: The time window over which the rolling average is constructed is defined by the range of times seen in `actual.txt`, *not* `predicted.txt`. Since this is a model validation tool, we do not consider cases where predictions have been made for times at which we do not have actual data to validate against. Thus, times at the edges of time ranges in `predicted.txt` will not appear in the result file if they are not in the range constructed using `actual.txt`.
 
-This program makes some choices about how to handle nonstandard input data. Specifically:
+### `window.txt`
 
-* Missing values for the time, stock id, or value in either `actual.txt` or `predicted.txt` will result that observation being discarded prior to averaging.
-* The time window over which the rolling average is constructed is defined by the range of times seen in `actual.txt`. Since this is a model validation tool, we do not consider cases where predictions have been made for times at which we do not have actual data to validate against. Thus, times at the edges of time ranges in `predicted.txt` will not appear in the result file if they are not in the range constructed using `actual.txt`.
-* The program only looks at the first line of `window.txt`, so all subsequent lines are ignored and the window size on the first line is used.
-* The program exits if the first line of `window.txt` does not contain something which can be parsed as an integer.
-* Entries for the time and value fields are discarded if they are not integers or floats, respectively. Numeric values are explictly cast.
-* If the window size is larger than the entire observation period, a single average error is computed for the entire observation period.
+`window.txt` is assumed to be a single integer greater than 0 on the first line of the file. The program only looks at the first line of `window.txt`, so all subsequent lines are ignored and the window size on the first line is used. The program exits with status 1 if the first line of `window.txt` does not contain something which can be parsed as an integer. If the window size is larger than the entire observation period, a single average error is computed for the entire observation period.
 
 ## Output
 
@@ -64,14 +61,15 @@ The output is a file, `output/comparison.txt` which contains one line for each s
 start_time|end_time|average_error
 ```
 
-If there are no matching stocks for an entire time window, `average_error` is reported as `NA`. If this file cannot be written to, the program will exit with status 1.
+
+Where `start_time` is the minimum value and `end_time` the maximum value for the times contained in the window. `average_error` is computed by column after dropping missing values. If there are no matching stocks for an entire time window, `average_error` is reported as `NA`. If this file cannot be written to, the program will exit with status 1.
 
 # Dependencies
 
-This analysis tool has a handful of dependencies, all of which are standard packages for Python scientific computing. In each case, the version of the package present on the test system is noted in parentheses. This tool was developed in Python 2.7 in a vanilla Anaconda installation.
+This analysis tool has two dependencies, both of which are standard packages for Python scientific computing. In each case, the version of the package present on the test system is noted in parentheses. This tool was developed in Python 2.7 in a vanilla Anaconda installation.
 
-* **NumPy** (`1.15.0`)
-* **Pandas** (`0.23.4`)
+* [NumPy](http://www.numpy.org/) (`1.15.0`)
+* [Pandas](https://pandas.pydata.org/) (`0.23.4`)
 
 # Unit Tests
 
@@ -91,6 +89,3 @@ This repository also includes all the unit tests used to prepare this submission
 * `test_10`: A test of stock names with unicode characters.
 * `test_11`: A test of non-numeric stock values and times.
 * `test_12`: A test of window sizes larger than the observation period.
-
-
-# Miscellaneous Notes

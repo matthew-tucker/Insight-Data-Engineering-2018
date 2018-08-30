@@ -4,6 +4,7 @@
 ## TODO: Code headers
 ## TODO: Python style
 ## TODO: clean up README
+## TODO: completely missing inputs?
 
 import time
 start_time = time.time()
