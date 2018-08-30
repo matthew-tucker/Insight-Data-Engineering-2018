@@ -2,47 +2,62 @@
 
 ## TODO: Code headers
 ## TODO: Python style
-## TODO: clean up README
 
 import time
-start_time = time.time()
-
+import os
+import sys
+import argparse
 import numpy as np
 import pandas as pd
-import os, sys, argparse
 from itertools import tee, islice, izip
 
-#### FUNCTION DEFINITIONS ####
+start_time = time.time()
 
-## get a list of all time windows in a sliding window of size n
-## INPUT: a range of integers and a window size, n
-## RETURNS: a list of tuples of size n formed by rolling a window of size n over iterable
+
+#### FUNCTION DEFINITIONS ####
 def nwise(iterable, n=2):
+    """Get a list of all time windows in a sliding window.
+
+    Arguments:
+    iterable -- the element to form tuples over; must be iterable
+    n -- size of the rolling window (default 2)
+
+    Returns:
+    A list of tuples containing each time window to be analyzed.
+    """
     acc = []
-    iters = tee(iterable, n)                                                     
-    for i, it in enumerate(iters):                                               
+    iters = tee(iterable, n)
+    for i, it in enumerate(iters):
         next(islice(it, i, i), None)
     for tup in izip(*iters):
         acc.append(tup)
     return acc
 
 
-## get the average stock error for a given window
-## INPUT: a dataframe of actual & predicted values as well as a time window tuple
-## RETURNS: an average of the error for all stocks in that window, rounded to 2 digits
 def avg_window(df_actual, df_predict, win):
+    """Get the average stock error for a given window.
+
+    Arguments:
+    df_actual -- the actual stock values (DataFrame)
+    df_predicted -- the predicted stock values (DataFrame)
+    win -- the time window (tuple of included times)
+
+    Returns:
+    A string containing the average_error or 'NA' if no matching
+    time/stock pairs are found for the entire window.
+    """
     # subset the data by time window
     actuals_in_win = df_actual.loc[df_actual['Time'].isin(win)]
     predicts_in_win = df_predict.loc[df_predict['Time'].isin(win)]
-    
+
     # a full outer join gets us NaN for missing values on either side
-    joined_wins = actuals_in_win.merge(right=predicts_in_win, 
-                                   how='outer', on=['Time', 'Stock'])
-                                   
+    joined_wins = actuals_in_win.merge(right=predicts_in_win,
+                                       how='outer', on=['Time', 'Stock'])
+
     # compute the average error and return
     joined_wins['Error'] = abs(joined_wins['Value_x'] - joined_wins['Value_y'])
     err_mean = round(joined_wins['Error'].mean(), 2)
-    
+
     # if there are no matching stocks in a window, return NA
     if np.isnan(err_mean):
         return 'NA'
@@ -54,8 +69,19 @@ def avg_window(df_actual, df_predict, win):
 ## INPUT: a window tuple win and an error value error
 ## RETURNS: A string of format 'window_start|window_end|error'
 def format_result(win, error):
+    """Format output using pipe delimiters.
+
+    Arguments:
+    win -- the time window (tuple of included values)
+    error -- string representing average_error
+
+    Returns:
+    A string formatted start|end|avg_error.
+    """
     tmp = [str(win[0]), str(win[len(win)-1]), error]
     return '|'.join(tmp)
+
+
 #### FUNCTION DEFINITIONS END ####
 
 #### COMMAND-LINE ARGUMENTS ####
@@ -87,7 +113,7 @@ except IOError as e:
 except pd.errors.EmptyDataError as e:
     print 'Could not parse data from file %s.\nPlease ensure it follows the specification in the README.' % f_actual
     sys.exit(1)
-    
+
 try:
     predicted = pd.read_table(f_predicted, sep='|', header=None, skipinitialspace=True, error_bad_lines=False)
 except IOError as e:
@@ -171,14 +197,14 @@ try:
         for t_win in t_wins:
             if args.verbose:
                 print 'Averaging window %s...' % str(t_win)
-    
+
             avg_err = avg_window(actual, predicted, t_win)
             err_formatted = format_result(t_win, avg_err)
             out_f.write(err_formatted + '\n')
 except IOError as e:
     print 'Could not write results to file %s.\nPlease make sure this diectory exists and can be written to.' % f_out
     sys.exit(1)
-        
+
 #### MAIN LOOP END ####
 
 #### PRINT RESULTS ####
