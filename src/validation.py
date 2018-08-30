@@ -114,6 +114,10 @@ predicted[0] = pd.to_numeric(predicted[0], errors='coerce')
 actual[2] = pd.to_numeric(actual[2], errors='coerce')
 predicted[2] = pd.to_numeric(predicted[2], errors='coerce')
 
+# we don't want leading/trailing whitespace in stock ids
+actual[1] = actual[1].str.strip()
+predicted[1] = predicted[1].str.strip()
+
 # drop rows with null values
 actual = actual.dropna()
 predicted = predicted.dropna()
