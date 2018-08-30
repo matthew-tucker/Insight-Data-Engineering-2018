@@ -4,7 +4,6 @@
 ## TODO: Code headers
 ## TODO: Python style
 ## TODO: clean up README
-## TODO: Bad lines in input?
 
 import time
 start_time = time.time()
@@ -82,7 +81,7 @@ f_out = os.path.join(root_dir, args.output_file)
 
 # actually conduct the i/o
 try:
-    actual = pd.read_table(f_actual, sep='|', header=None, skipinitialspace=True)
+    actual = pd.read_table(f_actual, sep='|', header=None, skipinitialspace=True, error_bad_lines=False)
 except IOError as e:
     print 'Could not read file %s.\nPlease ensure it exists and can be read.' % f_actual
     sys.exit(1)
@@ -91,7 +90,7 @@ except pd.errors.EmptyDataError as e:
     sys.exit(1)
     
 try:
-    predicted = pd.read_table(f_predicted, sep='|', header=None, skipinitialspace=True)
+    predicted = pd.read_table(f_predicted, sep='|', header=None, skipinitialspace=True, error_bad_lines=False)
 except IOError as e:
     print 'Could not read file %s.\nPlease ensure it exists and can be read.' % f_predicted
     sys.exit(1)
@@ -121,6 +120,10 @@ predicted[2] = pd.to_numeric(predicted[2], errors='coerce')
 # we don't want leading/trailing whitespace in stock ids
 actual[1] = actual[1].str.strip()
 predicted[1] = predicted[1].str.strip()
+
+# if the first line has >2 delimiters, we drop all extra columns
+actual = actual[[0, 1, 2]]
+predicted = predicted[[0,1,2]]
 
 # drop rows with null values
 actual = actual.dropna()

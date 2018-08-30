@@ -45,7 +45,9 @@ The input must contain contain three files, all stored in `input/`. The program 
 time|stock_name|stock_value
 ```
 
-Where `time` is assumed to be an integer greater than 0. Per the directions, the script assumes these files are sorted by `time`, though nothing in the running of the script should require this to be the case. Missing values for the `time`, `stock_name` or `stock_value` in either `actual.txt` or `predicted.txt` will result that observation being discarded prior to averaging. Entries for the `time` and `stock_value` fields are treated as missing and discarded if they are not integers or floats, respectively. Numeric values are explictly cast. Whitespace on either side of a `stock_name` is discarded; whitespace internal to a `stock_name` will be treated as distinctive, and so `AAPL` and `AA PL` are distinct values for `stock_name`, but `AAPL` and ` AAPL ` are not. Duplicate rows (defined in terms of (time, stock_name) keys) are cleaned by keeping only the first row.
+Where `time` is assumed to be an integer greater than 0. Per the directions, the script assumes these files are sorted by `time`, though nothing in the running of the script should require this to be the case. Missing values for the `time`, `stock_name` or `stock_value` in either `actual.txt` or `predicted.txt` will result that observation being discarded prior to averaging. Entries for the `time` and `stock_value` fields are treated as missing and discarded if they are not integers or floats, respectively. Numeric values are explictly cast. Whitespace on either side of a `stock_name` is discarded; whitespace internal to a `stock_name` will be treated as distinctive, and so `AAPL` and `AA PL` are distinct values for `stock_name`, but `AAPL` and ` AAPL ` are not. Duplicate rows (defined in terms of (time, stock_name) keys) are cleaned by keeping only the first row. 
+
+The program is designed to operate with `actual.txt` and `predicted.txt` files which have exactly two delimiters (`|`) on each line. Rows with <2 delimiters are dropped as missing data and lines with >3 delimiters are dropped by the `read_table()` method from pandas.
 
 Additionally, a remark about the time domain of analysis is in order: The time window over which the rolling average is constructed is defined by the range of times seen in `actual.txt`, *not* `predicted.txt`. Since this is a model validation tool, we do not consider cases where predictions have been made for times at which we do not have actual data to validate against. Thus, times at the edges of time ranges in `predicted.txt` will not appear in the result file if they are not in the range constructed using `actual.txt`.
 
@@ -94,3 +96,5 @@ This repository also includes all the unit tests used to prepare this submission
 * `test_15`: A test where the input contains lines with only whitespace.
 * `test_16`: A test of completely duplicated rows.
 * `test_17`: Like `test_16`, but we add a row that is not duplicated on `value`.
+* `test_18`: A test of non-initial lines with extra delimiters.
+* `test_20`: A test of initial lines with extra delimiters.
