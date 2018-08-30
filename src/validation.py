@@ -5,6 +5,8 @@
 ## TODO: Python style
 ## TODO: clean up README
 ## TODO: completely missing inputs?
+## TODO: Duplicate entires in actual/predicted?
+## TODO: Bad lines in input?
 
 import time
 start_time = time.time()
@@ -82,13 +84,13 @@ f_out = os.path.join(root_dir, args.output_file)
 
 # actually conduct the i/o
 try:
-    actual = pd.read_table(f_actual, sep='|', header=None)
+    actual = pd.read_table(f_actual, sep='|', header=None, skipinitialspace=True)
 except IOError as e:
     print 'Could not read file %s.\nPlease ensure it exists and can be read.' % f_actual
     sys.exit(1)
     
 try:
-    predicted = pd.read_table(f_predicted, sep='|', header=None)
+    predicted = pd.read_table(f_predicted, sep='|', header=None, skipinitialspace=True)
 except IOError as e:
     print 'Could not read file %s.\nPlease ensure it exists and can be read.' % f_predicted
     sys.exit(1)
