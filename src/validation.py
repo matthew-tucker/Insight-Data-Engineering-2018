@@ -6,8 +6,6 @@
 ## TODO: clean up README
 ## TODO: completely missing inputs?
 ## TODO: Duplicate entires in actual/predicted?
-## TODO: Bad lines in input?
-## TODO: Whitespace lines
 ## TODO: degenerate or overfull lines
 
 import time

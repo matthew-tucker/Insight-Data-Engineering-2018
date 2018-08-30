@@ -91,3 +91,4 @@ This repository also includes all the unit tests used to prepare this submission
 * `test_12`: A test of window sizes larger than the observation period.
 * `test_13`: A test of whitespace in the input files.
 * `test_14`: A test where input files are sorted by stock_id (but still in chronological order).
+* `test_15`: A test where the input contains lines with only whitespace.
