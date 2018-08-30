@@ -7,6 +7,8 @@
 ## TODO: completely missing inputs?
 ## TODO: Duplicate entires in actual/predicted?
 ## TODO: Bad lines in input?
+## TODO: Whitespace lines
+## TODO: degenerate or overfull lines
 
 import time
 start_time = time.time()
@@ -88,11 +90,17 @@ try:
 except IOError as e:
     print 'Could not read file %s.\nPlease ensure it exists and can be read.' % f_actual
     sys.exit(1)
+except pd.errors.EmptyDataError as e:
+    print 'Could not parse data from file %s.\nPlease ensure it follows the specification in the README.' % f_actual
+    sys.exit(1)
     
 try:
     predicted = pd.read_table(f_predicted, sep='|', header=None, skipinitialspace=True)
 except IOError as e:
     print 'Could not read file %s.\nPlease ensure it exists and can be read.' % f_predicted
+    sys.exit(1)
+except pandas.errors.EmptyDataError as e:
+    print 'Could not parse data from file %s.\nPlease ensure it follows the specification in the README.' % f_predicted
     sys.exit(1)
 
 try:
